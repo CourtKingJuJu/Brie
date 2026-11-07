@@ -1,7 +1,7 @@
 export const currentNurse = {
     nurse_id: "nurse-001",
-    first_name: "Sarah",
-    last_name: "Thompson",
+    first_name: "Julian",
+    last_name: "McCarty",
     role: "RN",
   };
   

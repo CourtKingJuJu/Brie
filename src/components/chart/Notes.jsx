@@ -17,7 +17,7 @@ function Notes({ notes }) {
                 <div className="note-header">
                   <div>
                     <span className="note-type">{note.note_type}</span>
-                    <strong>Sarah Thompson, RN</strong>
+                    <strong>Julian McCarty, RN</strong>
                   </div>
   
                   <time>

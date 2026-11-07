@@ -6,7 +6,7 @@ function Sidebar() {
       <div className="sidebar-logo">
         <div className="hospital-mark">H</div>
         <div>
-          <h2>Northstar</h2>
+          <h2>Hospital EHR</h2>
           <span>Hospital System</span>
         </div>
       </div>
@@ -34,13 +34,6 @@ function Sidebar() {
           My Patients
         </NavLink>
       </nav>
-
-      <div className="sidebar-bottom">
-        <div className="system-status">
-          <span className="status-dot"></span>
-          System operational
-        </div>
-      </div>
     </aside>
   );
 }

@@ -62,7 +62,10 @@ function PatientChart() {
       <div className="empty-state">
         <h2>Patient not found</h2>
 
-        <button className="secondary-button" onClick={() => navigate("/patients")}>
+        <button
+          className="secondary-button"
+          onClick={() => navigate("/patients")}
+        >
           Return to patients
         </button>
       </div>
@@ -71,7 +74,10 @@ function PatientChart() {
 
   return (
     <div>
-      <button className="back-button" onClick={() => navigate("/patients")}>
+      <button
+        className="back-button"
+        onClick={() => navigate("/patients")}
+      >
         ← Back to My Patients
       </button>
 
@@ -83,6 +89,7 @@ function PatientChart() {
         <a href="#medications">Medications</a>
         <a href="#orders">Orders</a>
         <a href="#notes">Notes</a>
+        <a href="#handoff">Handoff / Shift Plan</a>
       </div>
 
       <div className="chart-content">
@@ -105,6 +112,48 @@ function PatientChart() {
         <div id="notes">
           <Notes notes={notes} />
         </div>
+
+        <section className="section-card" id="handoff">
+          <div className="section-card-header">
+            <div>
+              <h2>Handoff / Shift Plan</h2>
+              <p>Information for the next shift.</p>
+            </div>
+          </div>
+
+          <div className="report-section">
+            <h3>Current Status</h3>
+            <p>
+              Patient currently stable. Continue routine monitoring
+              and review recent observations.
+            </p>
+          </div>
+
+          <div className="report-section">
+            <h3>Key Concerns</h3>
+            <p>
+              Monitor recent changes in oxygen saturation and
+              medication status.
+            </p>
+          </div>
+
+          <div className="report-section">
+            <h3>Pending / Follow-up</h3>
+            <p>
+              Review active orders and follow up on outstanding
+              clinical information.
+            </p>
+          </div>
+
+          <div className="report-section">
+            <h3>Next Shift Notes</h3>
+            <textarea
+              className="chart-textarea"
+              placeholder="Enter information for the next shift..."
+              rows={4}
+            />
+          </div>
+        </section>
       </div>
     </div>
   );

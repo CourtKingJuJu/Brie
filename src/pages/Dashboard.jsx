@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import PatientList from "../components/patients/PatientList";
 import { currentNurse } from "../data/mockData";
-import { getAssignedPatients } from "../services/patientService";
+import { getPatients } from "../services/patientService";
 
 function Dashboard() {
   const [patients, setPatients] = useState([]);
 
   useEffect(() => {
     async function loadPatients() {
-      const data = await getAssignedPatients(currentNurse.nurse_id);
+      const data = await getPatients();
       setPatients(data);
     }
 

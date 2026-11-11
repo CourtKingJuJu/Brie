@@ -1,38 +1,54 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { currentNurse, patients } from "../data/mockData";
+import { currentNurse } from "../data/mockData";
+import { getPatients } from "../services/patientService";
 
 const priorityPatients = [
   {
-    patientId: "p1",
+    patientId: 1,
     priority: "High",
     reason: "SpO₂ has decreased across recent observations.",
     action: "Check oxygen status and review recent observations.",
   },
   {
-    patientId: "p2",
+    patientId: 2,
     priority: "Medium",
     reason: "Medication was refused during the current shift.",
     action: "Follow up on medication refusal.",
   },
   {
-    patientId: "p3",
+    patientId: 3,
     priority: "Stable",
     reason: "No significant changes in recent observations.",
     action: "Continue routine monitoring.",
   },
   {
-    patientId: "p4",
+    patientId: 4,
     priority: "Stable",
     reason: "No immediate concerns identified.",
     action: "Continue routine monitoring.",
   },
 ];
 
-function getPatient(patientId) {
-  return patients.find((patient) => patient.patient_id === patientId);
+function getPatient(patientList, patientId) {
+  return patientList.find(
+    (patient) => patient.patient_id === patientId
+  );
 }
 
 export default function Assistance() {
+
+  const [patients, setPatients] = useState([]);
+
+  useEffect(() => {
+    async function loadPatients() {
+      const data = await getPatients();
+      setPatients(data);
+    }
+
+    loadPatients();
+  }, []);
+  
   return (
     <div className="page">
       <div className="page-header">
@@ -86,7 +102,7 @@ export default function Assistance() {
 
         <div className="priority-list">
           {priorityPatients.map((item) => {
-            const patient = getPatient(item.patientId);
+            const patient = getPatient(patients, item.patientId);
 
             if (!patient) return null;
 

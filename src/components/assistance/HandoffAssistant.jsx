@@ -1,9 +1,10 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { patients } from "../../data/mockData";
+import { getPatients } from "../../services/patientService";
 
 const handoffData = [
   {
-    patientId: "p1",
+    patientId: "1",
     priority: "High",
     summary:
       "SpO₂ has decreased across recent observations. CBC is currently ordered and the patient requires continued monitoring.",
@@ -14,7 +15,7 @@ const handoffData = [
     ],
   },
   {
-    patientId: "p2",
+    patientId: "2",
     priority: "Medium",
     summary:
       "Patient refused scheduled Ramipril during the current shift. Refusal has been documented.",
@@ -25,11 +26,24 @@ const handoffData = [
   },
 ];
 
-function getPatient(patientId) {
-  return patients.find((patient) => patient.patient_id === patientId);
+function getPatient(patientList, patientId) {
+  return patientList.find(
+    (patient) => patient.patient_id === patientId
+  );
 }
 
 export default function HandoffAssistant() {
+  const [patients, setPatients] = useState([]);
+
+  useEffect(() => {
+    async function loadPatients() {
+      const data = await getPatients();
+      setPatients(data);
+    }
+
+    loadPatients();
+  }, []);
+
   return (
     <div className="page">
       <div className="page-header">
@@ -77,7 +91,7 @@ export default function HandoffAssistant() {
 
       <div className="handoff-patients">
         {handoffData.map((item) => {
-          const patient = getPatient(item.patientId);
+          const patient = getPatient(patients, item.patientId);
 
           if (!patient) return null;
 

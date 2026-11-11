@@ -1,18 +1,66 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { patients } from "../data/mockData";
 
-const patient = patients[0];
+import {
+  getPatient,
+  getPatientMedications,
+  getPatientOrders,
+  getPatientNotes,
+} from "../services/patientService";
+
+const OR_PATIENT_ID = 2;
 
 const preparationItems = [
-  { label: "NPO status confirmed", status: "Pending" },
+  { label: "NPO status confirmed", status: "Complete" },
   { label: "IV access", status: "Complete" },
-  { label: "Consent", status: "Complete" },
+  { label: "Consent", status: "Pending" },
   { label: "Required labs", status: "Complete" },
   { label: "Medication review", status: "Pending" },
   { label: "Transport", status: "Pending" },
 ];
 
 export default function ORReport() {
+  const [patient, setPatient] = useState(null);
+  const [medications, setMedications] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [notes, setNotes] = useState([]);
+
+  useEffect(() => {
+    async function loadORReport() {
+      const patientData = await getPatient(OR_PATIENT_ID);
+
+      if (!patientData) {
+        return;
+      }
+
+      setPatient(patientData);
+
+      const [
+        medicationData,
+        orderData,
+        noteData,
+      ] = await Promise.all([
+        getPatientMedications(OR_PATIENT_ID),
+        getPatientOrders(OR_PATIENT_ID),
+        getPatientNotes(OR_PATIENT_ID),
+      ]);
+
+      setMedications(medicationData);
+      setOrders(orderData);
+      setNotes(noteData);
+    }
+
+    loadORReport();
+  }, []);
+
+  if (!patient) {
+    return (
+      <div className="empty-state">
+        <h2>Loading OR preparation...</h2>
+      </div>
+    );
+  }
+
   return (
     <div className="page">
       <div className="page-header">
@@ -72,7 +120,7 @@ export default function ORReport() {
 
           <div>
             <span>Procedure</span>
-            <strong>Mock Procedure</strong>
+            <strong>Cholecystectomy</strong>
           </div>
         </div>
       </section>
@@ -84,42 +132,66 @@ export default function ORReport() {
           <div className="report-section">
             <h3>Current Status</h3>
             <p>
-              Patient is currently stable. Recent observations should be
-              reviewed before transport.
+              Patient is currently stable. Recent observations should
+              be reviewed before transport.
             </p>
           </div>
 
           <div className="report-section">
             <h3>Relevant Medications</h3>
-            <p>Acetaminophen — administered</p>
-            <p>Ramipril — refused</p>
-            <p>Enoxaparin — scheduled</p>
+
+            {medications.length > 0 ? (
+              medications.map((medication) => (
+                <p key={medication.medication_id}>
+                  {medication.medication_name} — {medication.status}
+                </p>
+              ))
+            ) : (
+              <p>No medications found.</p>
+            )}
           </div>
 
           <div className="report-section">
             <h3>Active Orders</h3>
-            <p>CBC — Active</p>
-            <p>Chest X-Ray — Completed</p>
+
+            {orders.length > 0 ? (
+              orders.map((order) => (
+                <p key={order.order_id}>
+                  {order.order_type}: {order.description} — {order.status}
+                </p>
+              ))
+            ) : (
+              <p>No orders found.</p>
+            )}
           </div>
 
           <div className="report-section">
             <h3>Recent Notes</h3>
-            <p>
-              Recent nursing documentation indicates a medication refusal
-              during the current shift.
-            </p>
+
+            {notes.length > 0 ? (
+              notes.slice(0, 3).map((note) => (
+                <p key={note.note_id}>
+                  {note.content}
+                </p>
+              ))
+            ) : (
+              <p>No recent notes found.</p>
+            )}
           </div>
         </section>
 
         <section className="section-card">
           <div className="section-card-header">
             <h2>Preparation</h2>
-            <span className="muted-text">Mock checklist</span>
+            <span className="muted-text">OR checklist</span>
           </div>
 
           <div className="checklist">
             {preparationItems.map((item) => (
-              <div className="checklist-row" key={item.label}>
+              <div
+                className="checklist-row"
+                key={item.label}
+              >
                 <div className="checklist-box">
                   {item.status === "Complete" ? "✓" : ""}
                 </div>
@@ -141,7 +213,9 @@ export default function ORReport() {
 
           <button
             className="primary-button full-width"
-            onClick={() => alert("Mock OR preparation summary generated.")}
+            onClick={() =>
+              alert("OR preparation summary generated.")
+            }
           >
             Generate OR Prep Summary
           </button>

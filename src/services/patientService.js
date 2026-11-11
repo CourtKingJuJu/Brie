@@ -1,47 +1,113 @@
-import {
-    patients,
-    assignments,
-    observations,
-    medications,
-    orders,
-    notes,
-  } from "../data/mockData";
-  
-  export async function getAssignedPatients(nurseId) {
-    const nurseAssignments = assignments.filter(
-      (assignment) =>
-        assignment.nurse_id === nurseId && assignment.end_time === null
-    );
-  
-    return nurseAssignments
-      .map((assignment) =>
-        patients.find(
-          (patient) => patient.patient_id === assignment.patient_id
-        )
-      )
-      .filter(Boolean);
+import { supabase } from "../lib/supabaseClient";
+
+/*
+ * Get all patients
+ */
+export async function getPatients() {
+  const { data, error } = await supabase
+    .from("patients")
+    .select("*")
+    .order("room_number", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching patients:", error);
+    return [];
   }
-  
-  export async function getPatient(patientId) {
-    return patients.find((patient) => patient.patient_id === patientId);
+
+  return data;
+}
+
+
+/*
+ * Get one patient
+ */
+export async function getPatient(patientId) {
+  const { data, error } = await supabase
+    .from("patients")
+    .select("*")
+    .eq("patient_id", patientId)
+    .single();
+
+  if (error) {
+    console.error("Error fetching patient:", error);
+    return null;
   }
-  
-  export async function getPatientObservations(patientId) {
-    return observations.filter(
-      (observation) => observation.patient_id === patientId
-    );
+
+  return data;
+}
+
+
+/*
+ * Get observations for a patient
+ */
+export async function getPatientObservations(patientId) {
+  const { data, error } = await supabase
+    .from("observations")
+    .select("*")
+    .eq("patient_id", patientId)
+    .order("observed_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching observations:", error);
+    return [];
   }
-  
-  export async function getPatientMedications(patientId) {
-    return medications.filter(
-      (medication) => medication.patient_id === patientId
-    );
+
+  return data;
+}
+
+
+/*
+ * Get medications for a patient
+ */
+export async function getPatientMedications(patientId) {
+  const { data, error } = await supabase
+    .from("medications")
+    .select("*")
+    .eq("patient_id", patientId)
+    .order("scheduled_time", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching medications:", error);
+    return [];
   }
-  
-  export async function getPatientOrders(patientId) {
-    return orders.filter((order) => order.patient_id === patientId);
+
+  return data;
+}
+
+
+/*
+ * Get orders for a patient
+ */
+export async function getPatientOrders(patientId) {
+  const { data, error } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("patient_id", patientId)
+    .order("ordered_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching orders:", error);
+    return [];
   }
-  
-  export async function getPatientNotes(patientId) {
-    return notes.filter((note) => note.patient_id === patientId);
+
+  return data;
+}
+
+
+/*
+ * Get notes for a patient
+ */
+export async function getPatientNotes(patientId) {
+  const { data, error } = await supabase
+    .from("notes")
+    .select("*")
+    .eq("patient_id", patientId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching notes:", error);
+    return [];
   }
+
+  return data;
+}

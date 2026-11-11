@@ -1,4 +1,8 @@
-import { currentNurse } from "../../data/mockData";
+const currentNurse = {
+  first_name: "Sarah",
+  last_name: "Thompson",
+  role: "RN",
+};
 
 function Topbar() {
   return (
@@ -17,6 +21,7 @@ function Topbar() {
           <strong>
             {currentNurse.first_name} {currentNurse.last_name}
           </strong>
+
           <span>{currentNurse.role}</span>
         </div>
       </div>

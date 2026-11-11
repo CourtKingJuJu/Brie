@@ -1,11 +1,28 @@
-import { useState } from "react";
-import { patients } from "../data/mockData";
-
-const patient = patients[0];
+import { useEffect, useState } from "react";
+import { getPatient } from "../services/patientService";
 
 export default function Phone() {
+
+  const [patient, setPatient] = useState(null);
   const [showSummary, setShowSummary] = useState(false);
 
+  useEffect(() => {
+    async function loadPatient() {
+      const data = await getPatient(1);
+      setPatient(data);
+    }
+
+    loadPatient();
+  }, []);
+
+  if (!patient) {
+    return (
+      <div className="empty-state">
+        <h2>Loading patient...</h2>
+      </div>
+    );
+  }
+  
   return (
     <div className="page">
       <div className="page-header">

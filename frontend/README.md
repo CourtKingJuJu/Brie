@@ -1,3 +1,3 @@
-# Brie
+# Frontend
 
-Cognizant competition. MAS system that assists nurses with daily tasks. 
+Cognizant competition frontend

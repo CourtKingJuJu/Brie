@@ -1,23 +1,27 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+
+from gateway.tools import (
+    patient_tool,
+    observations_tool,
+    medications_tool,
+    active_orders_tool,
+    recent_notes_tool,
+)
 
 
-# Data comes directly for the DB not the frontend
 app = FastAPI(
     title="HospitalEHR Agent Gateway",
     description="Controlled gateway between AI agents and the Hospital EHR",
     version="0.1.0",
 )
 
-class GatewayRequest(BaseModel):
-    agent_id: str
-    action: str
-    patient_id: int
 
-    
 @app.get("/")
 def root():
-    return {"message": "HospitalEHR Agent Gateway is running"}
+    return {
+        "message": "HospitalEHR Agent Gateway is running"
+    }
+
 
 @app.get("/health")
 def health_check():
@@ -26,11 +30,26 @@ def health_check():
     }
 
 
-@app.post("/gateway")
-def gateway(request: GatewayRequest):
-    return {
-        "message": "Gateway request received",
-        "agent_id": request.agent_id,
-        "action": request.action,
-        "patient_id": request.patient_id,
-    }
+@app.get("/tools/patient/{patient_id}")
+def patient(patient_id: int):
+    return patient_tool(patient_id)
+
+
+@app.get("/tools/observations/{patient_id}")
+def observations(patient_id: int):
+    return observations_tool(patient_id)
+
+
+@app.get("/tools/medications/{patient_id}")
+def medications(patient_id: int):
+    return medications_tool(patient_id)
+
+
+@app.get("/tools/orders/{patient_id}")
+def active_orders(patient_id: int):
+    return active_orders_tool(patient_id)
+
+
+@app.get("/tools/notes/{patient_id}")
+def recent_notes(patient_id: int):
+    return recent_notes_tool(patient_id)

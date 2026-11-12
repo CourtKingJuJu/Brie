@@ -1,0 +1,1 @@
+# Defines what the agents are allowed to ask for and how the data is structured 

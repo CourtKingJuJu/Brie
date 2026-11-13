@@ -8,6 +8,14 @@ from gateway.tools import (
     recent_notes_tool,
 )
 
+from services.llm_service import (
+    generate_context
+)
+
+from gateway.schemas import (
+    ContextResponse
+)
+
 
 app = FastAPI(
     title="HospitalEHR Agent Gateway",
@@ -53,3 +61,7 @@ def active_orders(patient_id: int):
 @app.get("/tools/notes/{patient_id}")
 def recent_notes(patient_id: int):
     return recent_notes_tool(patient_id)
+
+@app.get("/api/context/{patient_id}", response_model=ContextResponse)
+def patient_context(patient_id: int):
+    return generate_context(patient_id)

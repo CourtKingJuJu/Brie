@@ -14,6 +14,7 @@ import {
   getPatientMedications,
   getPatientOrders,
   getPatientNotes,
+  getPatientContext,
 } from "../services/patientService";
 
 function PatientChart() {
@@ -26,32 +27,52 @@ function PatientChart() {
   const [orders, setOrders] = useState([]);
   const [notes, setNotes] = useState([]);
 
+  const [context, setContext] = useState(null);
+  const [contextLoading, setContextLoading] = useState(true);
+  const [contextError, setContextError] = useState(false);
+  const [showEvidence, setShowEvidence] = useState(false);
+
   useEffect(() => {
     async function loadChart() {
-      const patientData = await getPatient(patientId);
+      setContextLoading(true);
+      setContextError(false);
+      setShowEvidence(false);
 
-      if (!patientData) {
-        return;
+      try {
+        const patientData = await getPatient(patientId);
+
+        if (!patientData) {
+          setPatient(null);
+          return;
+        }
+
+        setPatient(patientData);
+
+        const [
+          observationData,
+          medicationData,
+          orderData,
+          noteData,
+          contextData,
+        ] = await Promise.all([
+          getPatientObservations(patientId),
+          getPatientMedications(patientId),
+          getPatientOrders(patientId),
+          getPatientNotes(patientId),
+          getPatientContext(patientId),
+        ]);
+
+        setObservations(observationData);
+        setMedications(medicationData);
+        setOrders(orderData);
+        setNotes(noteData);
+        setContext(contextData);
+      } catch (error) {
+        console.error("Failed to load patient chart:", error);
+        setContextError(true);
+      } finally {
+        setContextLoading(false);
       }
-
-      setPatient(patientData);
-
-      const [
-        observationData,
-        medicationData,
-        orderData,
-        noteData,
-      ] = await Promise.all([
-        getPatientObservations(patientId),
-        getPatientMedications(patientId),
-        getPatientOrders(patientId),
-        getPatientNotes(patientId),
-      ]);
-
-      setObservations(observationData);
-      setMedications(medicationData);
-      setOrders(orderData);
-      setNotes(noteData);
     }
 
     loadChart();
@@ -82,6 +103,75 @@ function PatientChart() {
       </button>
 
       <PatientHeader patient={patient} />
+
+      {/* AI Patient Context */}
+      <section className="context-card">
+        <div className="context-card-header">
+          <div>
+            <div className="context-card-title">
+              <span className="context-icon">✦</span>
+              <h2>Patient Context</h2>
+              <span className="context-badge">AI Assist</span>
+            </div>
+
+            <p className="context-card-subtitle">
+              Relevant documented context identified from the patient record.
+            </p>
+          </div>
+
+          {context && (
+            <button
+              className="secondary-button"
+              onClick={() => setShowEvidence((current) => !current)}
+            >
+              {showEvidence ? "Hide Evidence" : "View Evidence"}
+            </button>
+          )}
+        </div>
+
+        {contextLoading && (
+          <div className="context-loading">
+            Generating patient context...
+          </div>
+        )}
+
+        {contextError && !contextLoading && (
+          <div className="context-error">
+            Unable to generate patient context.
+          </div>
+        )}
+
+        {context && !contextLoading && !contextError && (
+          <>
+            <p className="context-summary">{context.summary}</p>
+
+            {showEvidence && (
+              <div className="context-evidence">
+                <h3>Supporting Evidence</h3>
+
+                {context.important_context.map((item, index) => (
+                  <div className="context-finding" key={index}>
+                    <p className="context-finding-text">
+                      {item.text}
+                    </p>
+
+                    <div className="context-evidence-list">
+                      {item.evidence.map((evidence, evidenceIndex) => (
+                        <span
+                          className="evidence-tag"
+                          key={`${evidence.source_type}-${evidence.source_id}-${evidenceIndex}`}
+                        >
+                          {evidence.source_type} #{evidence.source_id}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </section>
 
       <div className="chart-tabs">
         <a href="#overview">Overview</a>

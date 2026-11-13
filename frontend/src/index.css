@@ -1530,3 +1530,107 @@ td strong {
     outline: none;
     border-color: #8b98a2;
   }
+
+  .context-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+  }
+  
+  .context-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  
+  .context-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .context-card-title h2 {
+    margin: 0;
+    font-size: 18px;
+  }
+  
+  .context-icon {
+    font-size: 18px;
+  }
+  
+  .context-badge {
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #4f46e5;
+    font-weight: 600;
+  }
+  
+  .context-card-subtitle {
+    margin: 6px 0 0;
+    color: #64748b;
+    font-size: 13px;
+  }
+  
+  .context-summary {
+    margin: 18px 0 0;
+    line-height: 1.6;
+    color: #334155;
+  }
+  
+  .context-loading,
+  .context-error {
+    margin-top: 16px;
+    color: #64748b;
+  }
+  
+  .context-error {
+    color: #b91c1c;
+  }
+  
+  .context-evidence {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+  }
+  
+  .context-evidence h3 {
+    margin: 0 0 14px;
+    font-size: 15px;
+  }
+  
+  .context-finding {
+    padding: 14px 0;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  
+  .context-finding:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  
+  .context-finding-text {
+    margin: 0 0 10px;
+    line-height: 1.5;
+    color: #334155;
+  }
+  
+  .context-evidence-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .evidence-tag {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 12px;
+    font-family: monospace;
+  }

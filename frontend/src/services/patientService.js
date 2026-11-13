@@ -111,3 +111,18 @@ export async function getPatientNotes(patientId) {
 
   return data;
 }
+
+/*
+* Get context agent response
+*/ 
+export async function getPatientContext(patientId) {
+  const response = await fetch(
+    `http://localhost:8000/api/context/${patientId}`
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to generate patient context");
+  }
+
+  return response.json();
+}

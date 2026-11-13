@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from gateway.tools import (
     patient_tool,
@@ -21,6 +22,14 @@ app = FastAPI(
     title="HospitalEHR Agent Gateway",
     description="Controlled gateway between AI agents and the Hospital EHR",
     version="0.1.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 

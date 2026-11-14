@@ -116,12 +116,19 @@ export async function getPatientNotes(patientId) {
 * Get context agent response
 */ 
 export async function getPatientContext(patientId) {
-  const response = await fetch(
-    `http://localhost:8000/api/context/${patientId}`
-  );
+  const response = await fetch("http://localhost:8000/api/context", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      patient_id: Number(patientId),
+      purpose: "patient_chart_opened",
+    }),
+  });
 
   if (!response.ok) {
-    throw new Error("Failed to generate patient context");
+    throw new Error(`Context request failed: ${response.status}`);
   }
 
   return response.json();

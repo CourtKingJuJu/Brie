@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from services.llm_service import generate_context
 from gateway.schemas import ContextResponse, ContextRequest
+from utils.logger import logger
 
 
 app = FastAPI(
@@ -29,7 +30,29 @@ def root():
 
 @app.post("/api/context", response_model=ContextResponse)
 def patient_context(request: ContextRequest):
-    return generate_context(
-        request.patient_id,
-        request.purpose,
+
+    logger.info(
+        f"REQUEST | patient_id={request.patient_id} "
+        f"| purpose={request.purpose}"
     )
+
+    try:
+        result = generate_context(
+            request.patient_id,
+            request.purpose,
+        )
+
+        logger.info(
+            f"COMPLETE | patient_id={request.patient_id} | status=success"
+        )
+
+        return result
+
+    except Exception as error:
+        logger.error(
+            f"ERROR | patient_id={request.patient_id} "
+            f"| type={type(error).__name__} "
+            f"| message={error}"
+        )
+
+        raise

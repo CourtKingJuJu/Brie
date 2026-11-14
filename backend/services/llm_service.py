@@ -7,6 +7,7 @@ from gateway.auth import authenticate_agent
 from gateway.permissions import authorize_tool
 from gateway.tools import patient_context_tool
 from gateway.schemas import ContextResponse
+from utils.logger import logger
 
 
 co = cohere.ClientV2(api_key=COHERE_API_KEY)
@@ -14,25 +15,60 @@ co = cohere.ClientV2(api_key=COHERE_API_KEY)
 
 def generate_context(patient_id: int, purpose: str):
 
-    # Identify the agent
+    logger.info(
+        f"AGENT | starting context generation "
+        f"| patient_id={patient_id} "
+        f"| purpose={purpose}"
+    )
+
+    # Authenticate the agent
     agent = authenticate_agent(
         "context_agent",
         CONTEXT_AGENT_API_KEY,
     )
 
-    # Verify that this agent is allowed to use the required tool
+    # Verify tool permission
     authorize_tool(
         agent["agent_id"],
         "get_patient_context",
     )
 
-    # Retrieve the approved EHR data
-    patient_data = patient_context_tool(patient_id)
+    # Retrieve approved EHR data
+    logger.info(
+        f"TOOL | agent={agent['agent_id']} "
+        f"| tool=get_patient_context "
+        f"| patient_id={patient_id} "
+        f"| status=starting"
+    )
+
+    try:
+        patient_data = patient_context_tool(patient_id)
+
+        logger.info(
+            f"TOOL | agent={agent['agent_id']} "
+            f"| tool=get_patient_context "
+            f"| patient_id={patient_id} "
+            f"| status=success"
+        )
+
+    except Exception as error:
+        logger.error(
+            f"TOOL | agent={agent['agent_id']} "
+            f"| tool=get_patient_context "
+            f"| status=failure "
+            f"| error={error}"
+        )
+
+        raise
 
     if not patient_data:
+        logger.warning(
+            f"AGENT | patient_id={patient_id} | no_patient_data"
+        )
+
         return None
 
-    # Load the agent prompt
+    # Load prompt
     with open("prompts/context_agent.txt", "r") as file:
         prompt_template = file.read()
 
@@ -41,16 +77,38 @@ def generate_context(patient_id: int, purpose: str):
         json.dumps(patient_data, indent=2),
     )
 
-    # Ask the model to synthesize the context
-    response = co.chat(
-        model=COHERE_MODEL,
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
+    # LLM generation
+    logger.info(
+        f"LLM | agent={agent['agent_id']} "
+        f"| model={COHERE_MODEL} "
+        f"| status=starting"
     )
+
+    try:
+        response = co.chat(
+            model=COHERE_MODEL,
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+        )
+
+        logger.info(
+            f"LLM | agent={agent['agent_id']} "
+            f"| model={COHERE_MODEL} "
+            f"| status=success"
+        )
+
+    except Exception as error:
+        logger.error(
+            f"LLM | agent={agent['agent_id']} "
+            f"| status=failure "
+            f"| error={error}"
+        )
+
+        raise
 
     response_text = None
 
@@ -60,9 +118,44 @@ def generate_context(patient_id: int, purpose: str):
             break
 
     if not response_text:
+        logger.error(
+            f"OUTPUT | patient_id={patient_id} "
+            f"| status=failure "
+            f"| reason=no_text_response"
+        )
+
         raise ValueError("No text response returned from Cohere.")
 
-    response_data = json.loads(response_text)
+    # Parse and validate model output
+    logger.info(
+        f"OUTPUT | patient_id={patient_id} "
+        f"| validation=starting"
+    )
 
-    # Validate the model output against our schema
-    return ContextResponse.model_validate(response_data)
+    try:
+        response_data = json.loads(response_text)
+
+        validated_response = ContextResponse.model_validate(
+            response_data
+        )
+
+    except Exception as error:
+        logger.error(
+            f"OUTPUT | patient_id={patient_id} "
+            f"| validation=failure "
+            f"| error={error}"
+        )
+
+        raise
+
+    logger.info(
+        f"OUTPUT | patient_id={patient_id} "
+        f"| validation=success"
+    )
+
+    logger.info(
+        f"AGENT | patient_id={patient_id} "
+        f"| context_generation=complete"
+    )
+
+    return validated_response

@@ -23,3 +23,7 @@ class ImportantContext(BaseModel):
 class ContextResponse(BaseModel):
     summary: str
     important_context: list[ImportantContext]
+
+class ContextRequest(BaseModel):
+    patient_id: int
+    purpose: str

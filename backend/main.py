@@ -1,11 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import Depends
 
-from gateway.auth import authenticate_agent
-from gateway.permissions import authorize_tool
 from services.llm_service import generate_context
-from gateway.schemas import ContextResponse
+from gateway.schemas import ContextResponse, ContextRequest
 
 
 app = FastAPI(
@@ -30,14 +27,9 @@ def root():
     }
 
 
-@app.get("/api/context/{patient_id}", response_model=ContextResponse)
-def patient_context(
-    patient_id: int,
-    agent: dict = Depends(authenticate_agent),
-):
-    authorize_tool(
-        agent["agent_id"],
-        "get_patient_context",
+@app.post("/api/context", response_model=ContextResponse)
+def patient_context(request: ContextRequest):
+    return generate_context(
+        request.patient_id,
+        request.purpose,
     )
-
-    return generate_context(patient_id)

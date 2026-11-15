@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from services.llm_service import generate_context
+from agents.context_agent import ContextAgent
 from gateway.schemas import ContextResponse, ContextRequest
 from utils.logger import logger
 
@@ -21,6 +21,10 @@ app.add_middleware(
 )
 
 
+# Initialize agents
+context_agent = ContextAgent()
+
+
 @app.get("/")
 def root():
     return {
@@ -37,7 +41,7 @@ def patient_context(request: ContextRequest):
     )
 
     try:
-        result = generate_context(
+        result = context_agent.generate(
             request.patient_id,
             request.purpose,
         )

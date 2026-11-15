@@ -78,3 +78,13 @@ def get_recent_notes(patient_id: int):
     )
 
     return response.data
+
+def get_assigned_patients(nurse_id: int):
+    response = (
+        supabase.table("assignments")
+        .select("patient_id, shift, start_time, end_time")
+        .eq("nurse_id", nurse_id)
+        .execute()
+    )
+
+    return response.data

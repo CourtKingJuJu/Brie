@@ -8,8 +8,12 @@ AGENT_PERMISSIONS = {
     "context_agent": {
         "get_patient_context",
     },
-}
 
+    "handoff_agent": {
+        "get_assigned_patients",
+        "delegate_to_context_agent",
+    },
+}
 
 def authorize_tool(agent_id: str, tool_name: str):
 

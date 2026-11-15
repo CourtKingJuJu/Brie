@@ -27,3 +27,26 @@ class ContextResponse(BaseModel):
 class ContextRequest(BaseModel):
     patient_id: int
     purpose: str
+    
+class HandoffRequest(BaseModel):
+    nurse_id: int
+    purpose: str
+
+
+class PatientPriority(BaseModel):
+    patient_id: int
+    priority: str
+    rationale: str
+    evidence: list[Evidence]
+
+
+class PatientHandoff(BaseModel):
+    patient_id: int
+    summary: str
+    important_context: list[ImportantContext]
+    priority: PatientPriority
+
+
+class HandoffResponse(BaseModel):
+    shift_summary: str
+    patients: list[PatientHandoff]

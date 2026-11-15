@@ -9,6 +9,7 @@ from services.ehr_service import (
     get_medications,
     get_active_orders,
     get_recent_notes,
+    get_assigned_patients
 )
 
 
@@ -72,3 +73,6 @@ def patient_context_tool(patient_id: int):
         "orders": active_orders_tool(patient_id),
         "notes": recent_notes_tool(patient_id),
     }
+
+def assigned_patients_tool(nurse_id: int):
+    return get_assigned_patients(nurse_id)

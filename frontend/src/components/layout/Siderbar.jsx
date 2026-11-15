@@ -28,9 +28,9 @@ function Sidebar() {
           My Patients
         </NavLink>
 
-        <NavLink to="/assistance" className={getNavClass}>
-          <span>✦</span>
-          Assistance
+        <NavLink to="/handoff" className={getNavClass}>
+          <span>⇄</span>
+          Handoff
         </NavLink>
 
         <NavLink to="/or" className={getNavClass}>

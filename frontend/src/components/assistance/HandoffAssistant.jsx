@@ -54,9 +54,6 @@ export default function HandoffAssistant() {
           </p>
         </div>
 
-        <Link to="/assistance" className="secondary-button">
-          ← Back to Assistance
-        </Link>
       </div>
 
       <section className="section-card">

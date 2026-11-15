@@ -133,3 +133,25 @@ export async function getPatientContext(patientId) {
 
   return response.json();
 }
+
+/*
+* Get handoff agent response
+*/ 
+export async function getHandoff(nurseId) {
+  const response = await fetch("http://localhost:8000/api/handoff", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      nurse_id: Number(nurseId),
+      purpose: "shift_handoff",
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Handoff request failed: ${response.status}`);
+  }
+
+  return response.json();
+}

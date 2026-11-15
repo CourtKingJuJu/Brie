@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from agents.context_agent import ContextAgent
 from agents.handoff_agent import HandoffAgent
-from backend.agents import handoff_agent
+
 from gateway.schemas import (
     ContextResponse,
     ContextRequest,
@@ -29,8 +29,8 @@ app.add_middleware(
 
 
 # Initialize agents
-handoff_agent = HandoffAgent()
 context_agent = ContextAgent()
+handoff_agent = HandoffAgent(context_agent=context_agent)
 
 
 @app.get("/")
